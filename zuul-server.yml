@@ -1,14 +1,26 @@
 server:
   port: 8080 #the default port used for zuul service
-  
+
+# Option 1: Routing via url:
+# These simple url-routes do not get executed as a HystrixCommand, nor do they load-balance multiple URLs with Ribbon
+# It just take all request to the path echo/ and fordward to the server localhost:8091
+#zuul:
+#  ignoredServices: '*'
+#  routes:
+#    test-service:
+#       path: /test/**
+#       url: http://localhost:8081
+
+#Option 2: Chapter 5 - Another method is specifying a service-route and configuring a Ribbon client for the serviceId (doing so requires disabling Eureka support in Ribbon)
 zuul:
-  ignoredServices: '*'
-  host:
-    connect-timeout-millis: 20000
-    socket-timeout-millis: 20000
-    routes:
-      sample-service: # Service to create as sample
-        path: /test/** #path that will be intercepted
-        url: test #which url the request will e mapped to
-        stripPrefix: false  #if zuul should replace the "/sample/" segment
-        sensitiveHeaders:
+  routes:
+    echo-service:
+      path: /test/**
+      serviceId: test-service
+ribbon:
+  eureka:
+    enabled: false
+
+echo-service:
+  ribbon:
+    listOfServers: http://localhost:8081
