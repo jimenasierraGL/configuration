@@ -15,7 +15,7 @@ server:
 zuul:
   routes:
     echo-service:
-      path: /test/**
+      path: /test
       serviceId: test-service
 ribbon:
   eureka:
